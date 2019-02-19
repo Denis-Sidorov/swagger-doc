@@ -1,0 +1,31 @@
+version: '3.5'
+
+services:
+  generator:
+    build:
+      context: ./generator
+    image: ${REGISTRY_URL}api-doc-generator
+    volumes:
+      - ./generator:/var/www/app
+    networks:
+      - api-doc
+
+  swagger:
+    build:
+      context: .
+    image: ${REGISTRY_URL}api-doc-ui
+    container_name: api-doc-ui
+    ports:
+      - "8080"
+    environment:
+      - SWAGGER_JSON=/foo/openapi.json
+    networks:
+      - api-doc
+    restart: always
+
+networks:
+  api-doc:
+    ipam:
+      config:
+        - subnet: "172.42.0.0/24"
+    name: api-doc
